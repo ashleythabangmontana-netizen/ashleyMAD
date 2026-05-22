@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+
+    <application
+        android:name=".UniRoomsApp"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.UniRooms">
+
+        <!-- REPLACE YOUR_MAPS_API_KEY_HERE with your actual Google Maps API key -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="YOUR_MAPS_API_KEY_HERE" />
+
+        <activity
+            android:name=".ui.auth.SplashActivity"
+            android:exported="true"
+            android:theme="@style/Theme.UniRooms.Splash">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".ui.auth.RoleSelectionActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.auth.LoginActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.auth.RegisterActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.student.StudentHomeActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.student.ListingDetailActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.student.FilterActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.student.MapActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.student.ChatActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.student.PaymentActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.student.ReceiptActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.student.FavoritesActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.student.ProfileActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.provider.ProviderDashboardActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.provider.AddEditListingActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.provider.ProviderChatListActivity"
+            android:exported="false" />
+
+    </application>
+
+</manifest>

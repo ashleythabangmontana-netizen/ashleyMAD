@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorBackground">#0F172A</color>
+    <color name="colorSurface">#1E293B</color>
+    <color name="colorCardBackground">#1E293B</color>
+    <color name="colorTextPrimary">#F1F5F9</color>
+    <color name="colorTextSecondary">#94A3B8</color>
+    <color name="colorDivider">#334155</color>
+    <color name="colorBottomNav">#1E293B</color>
+    <color name="colorOnSurface">#F1F5F9</color>
+</resources>

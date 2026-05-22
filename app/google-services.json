@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "17458456741",
+    "project_id": "unirooms-3674a",
+    "storage_bucket": "unirooms-3674a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:17458456741:android:0b92f89cf25da4eb89854c",
+        "android_client_info": {
+          "package_name": "com.bac.unirooms"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDCqvZ49OzIo2kKWOa7LH2-DtVSQiyFjLU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

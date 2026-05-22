@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#6C63FF</color>
+    <color name="colorPrimaryDark">#5145CD</color>
+    <color name="colorPrimaryLight">#8B85FF</color>
+    <color name="colorSecondary">#03DAC5</color>
+    <color name="colorSecondaryDark">#00A896</color>
+    <color name="colorBackground">#F5F7FA</color>
+    <color name="colorSurface">#FFFFFF</color>
+    <color name="colorCardBackground">#FFFFFF</color>
+    <color name="colorDarkBackground">#121212</color>
+    <color name="colorDarkSurface">#1E1E2E</color>
+    <color name="colorOnPrimary">#FFFFFF</color>
+    <color name="colorTextPrimary">#1A1A2E</color>
+    <color name="colorTextSecondary">#6B7280</color>
+    <color name="colorDivider">#E2E8F0</color>
+    <color name="colorBottomNav">#1E293B</color>
+    <color name="colorOnSurface">#1A1A2E</color>
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
+    <color name="gray">#7A7A7A</color>
+    <color name="colorStatusBar">#5145CD</color>
+    <color name="colorAvailable">#4CAF50</color>
+    <color name="colorReserved">#FF9800</color>
+    <color name="colorSuccess">#4CAF50</color>
+    <color name="colorError">#F44336</color>
+    <color name="red">#F44336</color>
+    <color name="green">#4CAF50</color>
+    <color name="blue">#2196F3</color>
+</resources>

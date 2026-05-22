@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Montana UniRooms</string>
+    <string name="app_tagline">Student Accommodation Made Simple</string>
+
+    <!-- Auth -->
+    <string name="i_am_a_student">I am a Student</string>
+    <string name="i_am_a_provider">I am a Landlord / Provider</string>
+    <string name="login">Login</string>
+    <string name="register">Register</string>
+    <string name="full_name">Full Name</string>
+    <string name="email_address">Email Address</string>
+    <string name="password">Password</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="dont_have_account">Don\'t have an account? Register</string>
+    <string name="already_have_account">Already have an account? Login</string>
+    <string name="logout">Logout</string>
+
+    <!-- Home -->
+    <string name="search_listings">Search listings...</string>
+    <string name="filter">Filter</string>
+    <string name="all_listings">All Listings</string>
+    <string name="available">Available</string>
+    <string name="reserved">Reserved</string>
+    <string name="no_listings_found">No listings found</string>
+    <string name="per_month">/ month</string>
+    <string name="bwp">BWP</string>
+
+    <!-- Listing Detail -->
+    <string name="listing_details">Listing Details</string>
+    <string name="amenities">Amenities</string>
+    <string name="availability">Availability Date</string>
+    <string name="deposit">Deposit Required</string>
+    <string name="sharing_allowed">Sharing Allowed</string>
+    <string name="sharing_not_allowed">No Sharing</string>
+    <string name="reserve_now">Reserve Now</string>
+    <string name="chat_with_landlord">Chat with Landlord</string>
+    <string name="view_on_map">View on Map</string>
+    <string name="add_to_favorites">Add to Favorites</string>
+    <string name="remove_from_favorites">Remove from Favorites</string>
+    <string name="room_already_reserved">This room has already been reserved</string>
+
+    <!-- Filter -->
+    <string name="filter_listings">Filter Listings</string>
+    <string name="min_price">Min Price (BWP)</string>
+    <string name="max_price">Max Price (BWP)</string>
+    <string name="location">Location</string>
+    <string name="availability_date">Availability Date</string>
+    <string name="apply_filter">Apply Filter</string>
+    <string name="clear_filter">Clear Filter</string>
+    <string name="save_preferences">Save as Preferences</string>
+
+    <!-- Payment -->
+    <string name="make_payment">Make Deposit Payment</string>
+    <string name="payment_method">Payment Method</string>
+    <string name="orange_money">Orange Money</string>
+    <string name="myzaka">MyZaka</string>
+    <string name="bank_transfer">Bank Transfer</string>
+    <string name="cash">Cash</string>
+    <string name="confirm_payment">Confirm Payment</string>
+    <string name="deposit_amount">Deposit Amount</string>
+    <string name="payment_summary">Payment Summary</string>
+
+    <!-- Receipt -->
+    <string name="payment_confirmed">Payment Confirmed</string>
+    <string name="reference_number">Reference Number</string>
+    <string name="share_receipt">Share Receipt</string>
+    <string name="view_my_bookings">View My Bookings</string>
+
+    <!-- Map -->
+    <string name="map_title">Map and Navigation</string>
+    <string name="navigate_to_listing">Navigate to Listing</string>
+    <string name="distance_from_campus">Distance from Campus</string>
+    <string name="select_campus">Select Campus</string>
+    <string name="campus_distance_km">%1$.1f km from campus</string>
+
+    <!-- Chat -->
+    <string name="chat">Chat</string>
+    <string name="type_message">Type a message...</string>
+    <string name="send">Send</string>
+    <string name="no_messages">No messages yet. Start the conversation.</string>
+
+    <!-- Provider -->
+    <string name="my_listings">My Listings</string>
+    <string name="add_listing">Add New Listing</string>
+    <string name="edit_listing">Edit Listing</string>
+    <string name="delete_listing">Delete Listing</string>
+    <string name="listing_title">Listing Title</string>
+    <string name="description">Description</string>
+    <string name="price_per_month">Price per Month (BWP)</string>
+    <string name="listing_type">Type of Accommodation</string>
+    <string name="listing_location">Location / Area</string>
+    <string name="full_address">Full Address</string>
+    <string name="listing_amenities">Amenities (comma separated)</string>
+    <string name="sharing_allowed_label">Sharing Allowed</string>
+    <string name="save_listing">Save Listing</string>
+    <string name="latitude">Latitude</string>
+    <string name="longitude">Longitude</string>
+    <string name="total_listings">Total Listings</string>
+    <string name="available_listings">Available</string>
+    <string name="reserved_listings">Reserved</string>
+    <string name="messages">Messages</string>
+
+    <!-- Profile -->
+    <string name="profile">Profile</string>
+    <string name="dark_mode">Dark Mode</string>
+    <string name="preferred_campus">Preferred Campus</string>
+    <string name="notification_preferences">Notification Preferences</string>
+    <string name="price_alerts">Price Alerts</string>
+    <string name="enable_notifications">Enable Notifications</string>
+    <string name="my_reservations">My Reservations</string>
+
+    <!-- Validation -->
+    <string name="field_required">This field is required</string>
+    <string name="invalid_email">Please enter a valid email address</string>
+    <string name="password_short">Password must be at least 6 characters</string>
+    <string name="passwords_do_not_match">Passwords do not match</string>
+    <string name="invalid_price">Please enter a valid price</string>
+
+    <!-- Campuses -->
+    <string-array name="campuses">
+        <item>Botswana Accountancy College (BAC)</item>
+        <item>University of Botswana (UB)</item>
+        <item>Botho University</item>
+        <item>BAISAGO University</item>
+        <item>Limkokwing University</item>
+        <item>Botswana Open University (BOU)</item>
+    </string-array>
+
+    <!-- Locations -->
+    <string-array name="gaborone_locations">
+        <item>All Areas</item>
+        <item>Block 3</item>
+        <item>Block 6</item>
+        <item>Block 8</item>
+        <item>Block 9</item>
+        <item>Broadhurst</item>
+        <item>Phase 2</item>
+        <item>Tlokweng</item>
+        <item>Mogoditshane</item>
+        <item>Gaborone West</item>
+        <item>Old Naledi</item>
+        <item>Naledi</item>
+        <item>Extension 2</item>
+        <item>CBD</item>
+        <item>Phakalane</item>
+        <item>Airport Area</item>
+    </string-array>
+
+    <!-- House Types -->
+    <string-array name="house_types">
+        <item>Bachelor / Studio</item>
+        <item>Single Room</item>
+        <item>1 Bedroom Flat</item>
+        <item>2 Bedroom Flat</item>
+        <item>3 Bedroom House</item>
+        <item>Townhouse</item>
+        <item>Shared Accommodation</item>
+    </string-array>
+
+    <!-- Payment Methods -->
+    <string-array name="payment_methods">
+        <item>Orange Money</item>
+        <item>MyZaka</item>
+        <item>Bank Transfer</item>
+        <item>Cash Deposit</item>
+    </string-array>
+</resources>
