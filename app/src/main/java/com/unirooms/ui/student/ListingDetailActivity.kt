@@ -2,13 +2,16 @@ package com.bac.unirooms.ui.student
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.bac.unirooms.R
 import com.bac.unirooms.data.model.Listing
 import com.bac.unirooms.data.repository.FirebaseManager
 import com.bac.unirooms.databinding.ActivityListingDetailBinding
 import com.bac.unirooms.utils.ReceiptGenerator
 import com.bac.unirooms.utils.SessionManager
+import com.bumptech.glide.Glide
 
 class ListingDetailActivity : AppCompatActivity() {
 
@@ -47,9 +50,7 @@ class ListingDetailActivity : AppCompatActivity() {
             }
         }
 
-        binding.btnFavorite.setOnClickListener {
-            toggleFavorite()
-        }
+        binding.btnFavorite.setOnClickListener { toggleFavorite() }
 
         binding.btnViewMap.setOnClickListener {
             currentListing?.let { listing ->
@@ -83,22 +84,48 @@ class ListingDetailActivity : AppCompatActivity() {
                 currentListing = listing
 
                 binding.tvDetailTitle.text = listing.title
-                binding.tvDetailLocation.text = "${listing.location} - ${listing.address}"
-                binding.tvDetailPrice.text = "BWP ${String.format("%.0f", listing.price)}"
+                binding.tvDetailLocation.text = "${listing.location} — ${listing.address}"
+                binding.tvDetailPrice.text = "BWP ${String.format("%.0f", listing.price)}/month"
                 binding.tvDetailDeposit.text = "BWP ${String.format("%.0f", listing.depositAmount)}"
                 binding.tvDetailDescription.text = listing.description
                 binding.tvDetailType.text = listing.type
                 binding.tvDetailSharing.text = if (listing.sharingAllowed) "Allowed" else "Not Allowed"
                 binding.tvDetailAvailability.text = ReceiptGenerator.formatDateShort(listing.availabilityDate)
-                binding.tvDetailAmenities.text = listing.amenities.replace(",", "\n")
+                binding.tvDetailAmenities.text = listing.amenities.replace(",", "\n• ").let {
+                    if (it.isNotEmpty()) "• $it" else it
+                }
 
+                // ── Load image from Firebase Storage ─────────────────
+                if (listing.photoPath.isNotEmpty()) {
+                    Glide.with(this)
+                        .load(listing.photoPath)
+                        .placeholder(R.drawable.bg_listing_image)
+                        .error(R.drawable.bg_listing_image)
+                        .centerCrop()
+                        .into(binding.ivDetailImage)
+                } else {
+                    binding.ivDetailImage.setImageResource(R.drawable.bg_listing_image)
+                }
+
+                // ── Reserved / Available status ───────────────────────
                 val isReserved = listing.status == "RESERVED"
-                binding.tvDetailStatus.text = if (isReserved) "Reserved" else "Available"
+                binding.tvDetailStatus.text = if (isReserved) "🔴 Reserved" else "🟢 Available"
+                binding.tvDetailStatus.setBackgroundResource(
+                    if (isReserved) R.drawable.bg_status_reserved else R.drawable.bg_status_available
+                )
+                binding.tvDetailStatus.setTextColor(
+                    getColor(if (isReserved) R.color.colorReserved else R.color.colorAvailable)
+                )
+
+                // ── Disable reserve button if already reserved ────────
                 if (isReserved) {
-                    binding.tvDetailStatus.setBackgroundResource(com.bac.unirooms.R.drawable.bg_status_reserved)
-                    binding.tvDetailStatus.setTextColor(getColor(com.bac.unirooms.R.color.colorReserved))
                     binding.btnReserve.isEnabled = false
-                    binding.btnReserve.text = "Reserved"
+                    binding.btnReserve.text = "Already Reserved"
+                    binding.btnReserve.alpha = 0.5f
+                } else {
+                    binding.btnReserve.isEnabled = true
+                    binding.btnReserve.text = "Reserve & Pay Deposit"
+                    binding.btnReserve.alpha = 1.0f
                 }
 
                 checkFavoriteStatus()
@@ -109,7 +136,7 @@ class ListingDetailActivity : AppCompatActivity() {
     private fun checkFavoriteStatus() {
         FirebaseManager.isFavorite(session.getUserId(), listingId) { isFav ->
             runOnUiThread {
-                binding.btnFavorite.text = if (isFav) "Saved" else "Save"
+                binding.btnFavorite.text = if (isFav) "❤ Saved" else "♡ Save"
             }
         }
     }
@@ -119,11 +146,11 @@ class ListingDetailActivity : AppCompatActivity() {
             runOnUiThread {
                 if (isFav) {
                     FirebaseManager.removeFavorite(session.getUserId(), listingId)
-                    binding.btnFavorite.text = "Save"
+                    binding.btnFavorite.text = "♡ Save"
                     Toast.makeText(this, "Removed from saved listings", Toast.LENGTH_SHORT).show()
                 } else {
                     FirebaseManager.addFavorite(session.getUserId(), listingId)
-                    binding.btnFavorite.text = "Saved"
+                    binding.btnFavorite.text = "❤ Saved"
                     Toast.makeText(this, "Added to saved listings", Toast.LENGTH_SHORT).show()
                 }
             }

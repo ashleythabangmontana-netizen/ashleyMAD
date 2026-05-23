@@ -1,7 +1,6 @@
 package com.bac.unirooms.data.repository
 
 import android.net.Uri
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.bac.unirooms.data.model.Listing
@@ -17,50 +16,32 @@ import com.google.firebase.storage.FirebaseStorage
 object FirebaseManager {
 
     private val db = FirebaseDatabase.getInstance(
-        "https://unirooms-3674a-default-rtdb.europe-west1.firebasedatabase.app"
+        "https://unirooms-eae12-default-rtdb.europe-west1.firebasedatabase.app"
     )
 
-    private val usersRef      = db.getReference("users")
-    private val listingsRef   = db.getReference("listings")
-    private val messagesRef   = db.getReference("messages")
+    private val usersRef        = db.getReference("users")
+    private val listingsRef     = db.getReference("listings")
+    private val messagesRef     = db.getReference("messages")
     private val reservationsRef = db.getReference("reservations")
-    private val favoritesRef  = db.getReference("favorites")
-    private val storage       = FirebaseStorage.getInstance()
+    private val favoritesRef    = db.getReference("favorites")
+    private val storage         = FirebaseStorage.getInstance()
 
-    // ================= IMAGE UPLOAD =================
+    // ===================== IMAGE UPLOAD =====================
 
     fun uploadListingImage(imageUri: Uri, onResult: (String?) -> Unit) {
-        val fileName = "listing_images/listing_${System.currentTimeMillis()}.jpg"
-        val imageRef = storage.reference.child(fileName)
-
-        Log.d("FirebaseManager", "Starting upload for: $imageUri")
+        val fileName = "listing_${System.currentTimeMillis()}.jpg"
+        val imageRef = storage.reference.child("listing_images/$fileName")
 
         imageRef.putFile(imageUri)
-            .addOnProgressListener { taskSnapshot ->
-                val progress = (100.0 * taskSnapshot.bytesTransferred / taskSnapshot.totalByteCount)
-                Log.d("FirebaseManager", "Upload progress: $progress%")
-            }
             .addOnSuccessListener {
-                Log.d("FirebaseManager", "Upload succeeded, getting download URL")
                 imageRef.downloadUrl
-                    .addOnSuccessListener { uri ->
-                        Log.d("FirebaseManager", "Download URL: $uri")
-                        onResult(uri.toString())
-                    }
-                    .addOnFailureListener { e ->
-                        Log.e("FirebaseManager", "Failed to get download URL: ${e.message}")
-                        onResult(null)
-                    }
+                    .addOnSuccessListener { uri -> onResult(uri.toString()) }
+                    .addOnFailureListener { onResult(null) }
             }
-            .addOnFailureListener { e ->
-                // This is the most common failure point — Firebase Storage rules
-                // are blocking the upload. Check Logcat for the exact error.
-                Log.e("FirebaseManager", "Upload FAILED: ${e.message}")
-                onResult(null)
-            }
+            .addOnFailureListener { onResult(null) }
     }
 
-    // ================= USERS =================
+    // ===================== USERS =====================
 
     fun registerUser(user: User, onResult: (Boolean, String) -> Unit) {
         usersRef
@@ -73,14 +54,12 @@ object FirebaseManager {
                         return
                     }
                     val userId = usersRef.push().key ?: run {
-                        onResult(false, "Registration failed")
+                        onResult(false, "Registration failed — try again")
                         return
                     }
                     val newUser = user.copy(
                         id    = userId,
-                        email = user.email.trim().lowercase(),
-                        // Store password trimmed so login always matches
-                        password = user.password.trim()
+                        email = user.email.trim().lowercase()
                     )
                     usersRef.child(userId).setValue(newUser)
                         .addOnSuccessListener { onResult(true, userId) }
@@ -92,47 +71,38 @@ object FirebaseManager {
             })
     }
 
-    // FIX: Removed the `role` parameter completely.
-    // Login now checks email + password only. The user's real role is always
-    // read from their Firebase record — so logging in from either the Student
-    // or Provider screen will always work correctly.
-    fun loginUser(email: String, password: String, onResult: (User?) -> Unit) {
-        val cleanEmail    = email.trim().lowercase()
-        val cleanPassword = password.trim()  // trim whitespace that might cause mismatch
-
-        Log.d("FirebaseManager", "Attempting login for: $cleanEmail")
-
+    /**
+     * Login: match on email + password only (role is NOT checked here).
+     * The role stored in the database is used for routing after login.
+     */
+    fun loginUser(
+        email: String,
+        password: String,
+        role: String,
+        onResult: (User?) -> Unit
+    ) {
         usersRef
             .orderByChild("email")
-            .equalTo(cleanEmail)
+            .equalTo(email.trim().lowercase())
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    if (!snapshot.exists()) {
-                        Log.d("FirebaseManager", "No user found with email: $cleanEmail")
-                        onResult(null)
-                        return
-                    }
+                    if (!snapshot.exists()) { onResult(null); return }
+
                     for (child in snapshot.children) {
                         val user = child.getValue(User::class.java)
-                        Log.d("FirebaseManager", "Found user: ${user?.email}, role: ${user?.role}")
-                        // Compare trimmed passwords to avoid whitespace mismatches
-                        if (user != null && user.password.trim() == cleanPassword) {
-                            Log.d("FirebaseManager", "Login success for: ${user.email}")
+                        // Only check email + password — role routing happens in the activity
+                        if (user != null && user.password == password) {
                             onResult(user)
                             return
                         }
                     }
-                    Log.d("FirebaseManager", "Password did not match for: $cleanEmail")
                     onResult(null)
                 }
-                override fun onCancelled(error: DatabaseError) {
-                    Log.e("FirebaseManager", "Login cancelled: ${error.message}")
-                    onResult(null)
-                }
+                override fun onCancelled(error: DatabaseError) { onResult(null) }
             })
     }
 
-    // ================= LISTINGS =================
+    // ===================== LISTINGS =====================
 
     fun getAllListings(): LiveData<List<Listing>> {
         val liveData = MutableLiveData<List<Listing>>()
@@ -141,8 +111,7 @@ object FirebaseManager {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val list = mutableListOf<Listing>()
                     for (child in snapshot.children) {
-                        val listing = child.getValue(Listing::class.java)
-                        if (listing != null) list.add(0, listing)
+                        child.getValue(Listing::class.java)?.let { list.add(0, it) }
                     }
                     liveData.postValue(list)
                 }
@@ -160,8 +129,7 @@ object FirebaseManager {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val list = mutableListOf<Listing>()
                     for (child in snapshot.children) {
-                        val listing = child.getValue(Listing::class.java)
-                        if (listing != null) list.add(listing)
+                        child.getValue(Listing::class.java)?.let { list.add(it) }
                     }
                     liveData.postValue(list)
                 }
@@ -178,16 +146,13 @@ object FirebaseManager {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     onResult(snapshot.getValue(Listing::class.java))
                 }
-                override fun onCancelled(error: DatabaseError) {
-                    onResult(null)
-                }
+                override fun onCancelled(error: DatabaseError) { onResult(null) }
             })
     }
 
     fun addListing(listing: Listing, onResult: (Boolean) -> Unit) {
         val key = listingsRef.push().key ?: run { onResult(false); return }
-        val newListing = listing.copy(id = key)
-        listingsRef.child(key).setValue(newListing)
+        listingsRef.child(key).setValue(listing.copy(id = key))
             .addOnSuccessListener { onResult(true) }
             .addOnFailureListener { onResult(false) }
     }
@@ -204,7 +169,16 @@ object FirebaseManager {
             .addOnFailureListener { onResult(false) }
     }
 
-    // ================= FAVORITES =================
+    /**
+     * Mark a listing as RESERVED so no other student can book it.
+     */
+    fun markListingReserved(listingId: String, onResult: (Boolean) -> Unit) {
+        listingsRef.child(listingId).child("status").setValue("RESERVED")
+            .addOnSuccessListener { onResult(true) }
+            .addOnFailureListener { onResult(false) }
+    }
+
+    // ===================== FAVORITES =====================
 
     fun addFavorite(studentId: String, listingId: String) {
         favoritesRef.child(studentId).child(listingId).setValue(true)
@@ -218,7 +192,7 @@ object FirebaseManager {
         favoritesRef.child(studentId).child(listingId)
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) { onResult(snapshot.exists()) }
-                override fun onCancelled(error: DatabaseError)    { onResult(false) }
+                override fun onCancelled(error: DatabaseError) { onResult(false) }
             })
     }
 
@@ -227,9 +201,9 @@ object FirebaseManager {
         favoritesRef.child(studentId)
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    val favoriteIds = snapshot.children.mapNotNull { it.key }
-                    getAllListings().observeForever { allListings ->
-                        liveData.postValue(allListings.filter { it.id in favoriteIds })
+                    val ids = snapshot.children.mapNotNull { it.key }
+                    getAllListings().observeForever { all ->
+                        liveData.postValue(all.filter { it.id in ids })
                     }
                 }
                 override fun onCancelled(error: DatabaseError) { liveData.postValue(emptyList()) }
@@ -237,34 +211,42 @@ object FirebaseManager {
         return liveData
     }
 
-    // ================= MESSAGES =================
+    // ===================== MESSAGES =====================
 
     fun sendMessage(message: Message) {
         val key = messagesRef.push().key ?: return
         messagesRef.child(key).setValue(message.copy(id = key))
     }
 
+    /**
+     * Real-time listener — returns LiveData that updates instantly when a
+     * new message is sent by either participant.
+     */
     fun getMessages(
         currentUserId: String,
         otherUserId: String,
         listingId: String
     ): LiveData<List<Message>> {
         val liveData = MutableLiveData<List<Message>>()
+
         messagesRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val list = mutableListOf<Message>()
                 for (child in snapshot.children) {
-                    val message = child.getValue(Message::class.java) ?: continue
-                    val isConversation =
-                        (message.senderId == currentUserId && message.receiverId == otherUserId) ||
-                                (message.senderId == otherUserId   && message.receiverId == currentUserId)
-                    if (isConversation && message.listingId == listingId) list.add(message)
+                    val msg = child.getValue(Message::class.java) ?: continue
+                    val isBetweenUs =
+                        (msg.senderId == currentUserId && msg.receiverId == otherUserId) ||
+                                (msg.senderId == otherUserId   && msg.receiverId == currentUserId)
+                    if (isBetweenUs && msg.listingId == listingId) {
+                        list.add(msg)
+                    }
                 }
                 list.sortBy { it.timestamp }
                 liveData.postValue(list)
             }
             override fun onCancelled(error: DatabaseError) { liveData.postValue(emptyList()) }
         })
+
         return liveData
     }
 
@@ -274,15 +256,15 @@ object FirebaseManager {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val conversations = mutableMapOf<String, ConversationPreview>()
                 for (child in snapshot.children) {
-                    val message = child.getValue(Message::class.java) ?: continue
-                    if (message.receiverId == providerId) {
-                        val key = "${message.senderId}_${message.listingId}"
+                    val msg = child.getValue(Message::class.java) ?: continue
+                    if (msg.receiverId == providerId) {
+                        val key = "${msg.senderId}_${msg.listingId}"
                         conversations[key] = ConversationPreview(
-                            otherUserId   = message.senderId,
-                            otherUserName = message.senderName,
-                            listingId     = message.listingId,
-                            lastMessage   = message.content,
-                            lastTimestamp = message.timestamp
+                            otherUserId   = msg.senderId,
+                            otherUserName = msg.senderName,
+                            listingId     = msg.listingId,
+                            lastMessage   = msg.content,
+                            lastTimestamp = msg.timestamp
                         )
                     }
                 }
@@ -293,12 +275,20 @@ object FirebaseManager {
         return liveData
     }
 
-    // ================= RESERVATIONS =================
+    // ===================== RESERVATIONS =====================
 
+    /**
+     * Save the reservation AND mark the listing as RESERVED in one operation
+     * so no other user can book the same room.
+     */
     fun makeReservation(reservation: Reservation, onResult: (Boolean, String) -> Unit) {
         val key = reservationsRef.push().key ?: run { onResult(false, "Failed"); return }
         reservationsRef.child(key).setValue(reservation.copy(id = key))
-            .addOnSuccessListener { onResult(true, "Reservation successful") }
+            .addOnSuccessListener {
+                // Mark the listing reserved immediately after payment
+                markListingReserved(reservation.listingId) { /* fire and forget */ _ -> }
+                onResult(true, "Reservation successful")
+            }
             .addOnFailureListener { onResult(false, it.message ?: "Failed") }
     }
 }

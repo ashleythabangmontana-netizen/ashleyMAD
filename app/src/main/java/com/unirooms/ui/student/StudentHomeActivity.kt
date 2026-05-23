@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bac.unirooms.data.model.Listing
@@ -19,6 +20,26 @@ class StudentHomeActivity : AppCompatActivity() {
     private lateinit var session: SessionManager
     private lateinit var adapter: ListingAdapter
     private var allListings: List<Listing> = emptyList()
+
+    // Active filters
+    private var filterMinPrice: Double = 0.0
+    private var filterMaxPrice: Double = Double.MAX_VALUE
+    private var filterLocation: String = ""
+    private var filterDate: Long = Long.MAX_VALUE
+
+    // Filter launcher — receives results back from FilterActivity
+    private val filterLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) {
+            val data = result.data
+            filterMinPrice = data?.getDoubleExtra("minPrice", 0.0) ?: 0.0
+            filterMaxPrice = data?.getDoubleExtra("maxPrice", Double.MAX_VALUE) ?: Double.MAX_VALUE
+            filterLocation = data?.getStringExtra("location") ?: ""
+            filterDate = data?.getLongExtra("date", Long.MAX_VALUE) ?: Long.MAX_VALUE
+            applyFilters()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,34 +73,20 @@ class StudentHomeActivity : AppCompatActivity() {
 
         FirebaseManager.getAllListings().observe(this) { listings ->
             allListings = listings
-            val query = binding.etSearch.text.toString().trim()
-            if (query.isEmpty()) {
-                showListings(listings)
-            }
+            applyFilters()
         }
 
         binding.etSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                val query = s.toString().trim().lowercase()
-                if (query.isEmpty()) {
-                    showListings(allListings)
-                } else {
-                    val filtered = allListings.filter { listing ->
-                        listing.title.lowercase().contains(query) ||
-                                listing.location.lowercase().contains(query) ||
-                                listing.type.lowercase().contains(query) ||
-                                listing.amenities.lowercase().contains(query) ||
-                                listing.address.lowercase().contains(query)
-                    }
-                    showListings(filtered)
-                }
+                applyFilters()
             }
             override fun afterTextChanged(s: Editable?) {}
         })
 
+        // Use filterLauncher instead of startActivity
         binding.btnFilter.setOnClickListener {
-            startActivity(Intent(this, FilterActivity::class.java))
+            filterLauncher.launch(Intent(this, FilterActivity::class.java))
         }
 
         binding.bottomNavigation.setOnItemSelectedListener { item ->
@@ -100,6 +107,35 @@ class StudentHomeActivity : AppCompatActivity() {
                 else -> false
             }
         }
+    }
+
+    private fun applyFilters() {
+        val query = binding.etSearch.text.toString().trim().lowercase()
+
+        val filtered = allListings.filter { listing ->
+            // Search filter
+            val matchesSearch = if (query.isEmpty()) true else {
+                listing.title.lowercase().contains(query) ||
+                        listing.location.lowercase().contains(query) ||
+                        listing.type.lowercase().contains(query) ||
+                        listing.amenities.lowercase().contains(query) ||
+                        listing.address.lowercase().contains(query)
+            }
+
+            // Price filter
+            val matchesPrice = listing.price >= filterMinPrice && listing.price <= filterMaxPrice
+
+            // Location filter
+            val matchesLocation = filterLocation.isEmpty() ||
+                    listing.location.equals(filterLocation, ignoreCase = true)
+
+            // Date filter
+            val matchesDate = listing.availabilityDate <= filterDate
+
+            matchesSearch && matchesPrice && matchesLocation && matchesDate
+        }
+
+        showListings(filtered)
     }
 
     private fun showListings(listings: List<Listing>) {

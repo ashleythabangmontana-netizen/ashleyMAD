@@ -16,20 +16,30 @@
 
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="160dp">
+            android:layout_height="180dp">
 
-            <View
+            <!-- Full-size photo loaded by Glide from Firebase Storage -->
+            <ImageView
+                android:id="@+id/ivListingImage"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@drawable/bg_listing_image" />
+                android:scaleType="centerCrop"
+                android:src="@drawable/bg_listing_image"
+                android:contentDescription="Listing photo" />
 
+            <!-- Favorite heart icon top-left -->
             <ImageView
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:layout_gravity="center"
-                android:src="@drawable/ic_house_placeholder"
-                android:contentDescription="House" />
+                android:id="@+id/ivFavorite"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_gravity="top|start"
+                android:layout_margin="10dp"
+                android:padding="4dp"
+                android:src="@drawable/ic_favorites"
+                android:contentDescription="Favorite"
+                android:tint="#AAFFFFFF" />
 
+            <!-- Status badge top-right -->
             <TextView
                 android:id="@+id/tvStatus"
                 android:layout_width="wrap_content"
@@ -45,17 +55,6 @@
                 android:textColor="@color/colorAvailable"
                 android:textSize="11sp"
                 android:textStyle="bold" />
-
-            <ImageView
-                android:id="@+id/ivFavorite"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_gravity="top|start"
-                android:layout_margin="10dp"
-                android:padding="4dp"
-                android:src="@drawable/ic_favorites"
-                android:contentDescription="Favorite"
-                android:tint="#AAFFFFFF" />
 
         </FrameLayout>
 

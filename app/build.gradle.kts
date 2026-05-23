@@ -52,6 +52,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.7")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
     implementation("androidx.activity:activity-ktx:1.9.3")
+    implementation("com.github.bumptech.glide:glide:4.16.0")
 
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")

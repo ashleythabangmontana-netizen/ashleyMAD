@@ -68,7 +68,7 @@ class LoginActivity : AppCompatActivity() {
         // FIX: No longer passing role — login matches on email + password only.
         // The role is read from the user's saved record in Firebase, so accounts
         // always work regardless of which role screen the user arrived from.
-        FirebaseManager.loginUser(email, password) { user ->
+        FirebaseManager.loginUser(email, password, role) { user ->
             runOnUiThread {
                 binding.btnLogin.isEnabled = true
                 binding.btnLogin.text = "Login"

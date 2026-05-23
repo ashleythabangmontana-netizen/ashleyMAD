@@ -7,6 +7,7 @@ import com.bac.unirooms.R
 import com.bac.unirooms.data.model.Listing
 import com.bac.unirooms.databinding.ItemListingBinding
 import com.bac.unirooms.utils.ReceiptGenerator
+import com.bumptech.glide.Glide
 
 class ListingAdapter(
     private var listings: List<Listing>,
@@ -40,6 +41,7 @@ class ListingAdapter(
             else context.getColor(R.color.colorTextSecondary)
         )
 
+        // ── Status badge (Reserved / Available) ──────────────────
         val isReserved = listing.status == "RESERVED"
         holder.binding.tvStatus.text = if (isReserved) "Reserved" else "Available"
         holder.binding.tvStatus.setBackgroundResource(
@@ -49,6 +51,18 @@ class ListingAdapter(
             if (isReserved) context.getColor(R.color.colorReserved)
             else context.getColor(R.color.colorAvailable)
         )
+
+        // ── Load listing image from Firebase Storage via Glide ────
+        if (listing.photoPath.isNotEmpty()) {
+            Glide.with(context)
+                .load(listing.photoPath)
+                .placeholder(R.drawable.ic_house_placeholder)
+                .error(R.drawable.ic_house_placeholder)
+                .centerCrop()
+                .into(holder.binding.ivListingImage)
+        } else {
+            holder.binding.ivListingImage.setImageResource(R.drawable.ic_house_placeholder)
+        }
 
         holder.itemView.setOnClickListener { onItemClick(listing) }
         holder.binding.ivFavorite.setOnClickListener { onFavoriteClick(listing) }

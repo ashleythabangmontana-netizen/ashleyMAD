@@ -38,35 +38,44 @@ class ChatActivity : AppCompatActivity() {
         val currentUserId = session.getUserId()
         val currentUserName = session.getUserName()
 
+        // ── Set up RecyclerView ───────────────────────────────────
         adapter = MessageAdapter(emptyList(), currentUserId, otherUserName)
-
-        val layoutManager = LinearLayoutManager(this)
-        layoutManager.stackFromEnd = true
+        val layoutManager = LinearLayoutManager(this).apply { stackFromEnd = true }
         binding.rvMessages.layoutManager = layoutManager
         binding.rvMessages.adapter = adapter
 
+        // ── Observe real-time messages from Firebase ──────────────
         FirebaseManager.getMessages(currentUserId, otherUserId, listingId).observe(this) { messages ->
             adapter.updateMessages(messages)
-            binding.tvNoMessages.visibility = if (messages.isEmpty()) View.VISIBLE else View.GONE
-            binding.rvMessages.visibility = if (messages.isEmpty()) View.GONE else View.VISIBLE
-            if (messages.isNotEmpty()) {
-                binding.rvMessages.scrollToPosition(messages.size - 1)
+
+            if (messages.isEmpty()) {
+                binding.tvNoMessages.visibility = View.VISIBLE
+                binding.rvMessages.visibility = View.GONE
+            } else {
+                binding.tvNoMessages.visibility = View.GONE
+                binding.rvMessages.visibility = View.VISIBLE
+                // Scroll to latest message
+                binding.rvMessages.post {
+                    binding.rvMessages.scrollToPosition(messages.size - 1)
+                }
             }
         }
 
+        // ── Send button ───────────────────────────────────────────
         binding.btnSend.setOnClickListener {
             val text = binding.etMessage.text.toString().trim()
-            if (text.isNotEmpty()) {
-                val message = Message(
-                    senderId = currentUserId,
-                    senderName = currentUserName,
-                    receiverId = otherUserId,
-                    listingId = listingId,
-                    content = text
-                )
-                FirebaseManager.sendMessage(message)
-                binding.etMessage.text?.clear()
-            }
+            if (text.isEmpty()) return@setOnClickListener
+
+            val message = Message(
+                senderId = currentUserId,
+                senderName = currentUserName,
+                receiverId = otherUserId,
+                listingId = listingId,
+                content = text,
+                timestamp = System.currentTimeMillis()
+            )
+            FirebaseManager.sendMessage(message)
+            binding.etMessage.text?.clear()
         }
     }
 }
